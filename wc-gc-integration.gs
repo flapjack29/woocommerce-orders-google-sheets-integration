@@ -45,7 +45,33 @@ function fetch_orders(sheet_name) {
       //Logger.log(params);
 
     }
+    
+    var page = 2;
+    
+    // Adding new section handle pagination of the API request
+    while (params != "") {
+        
+        import_orders_to_sheet(sheet_name, params);
+        
+        url = url + "&page=" + page;
+        
+        result = UrlFetchApp.fetch(url, options);
+        
+        if (result.getResponseCode() == 200) {
+            
+            params = JSON.parse(result.getContentText());
+            
+            page ++;
+            
+        }
+       
+    }
 
+}
+
+
+function import_orders_to_sheet(sheet_name, params) {
+    
     var doc = SpreadsheetApp.getActiveSpreadsheet();
 
     var temp = doc.getSheetByName(sheet_name);
@@ -151,6 +177,7 @@ function fetch_orders(sheet_name) {
         removeDuplicates(sheet_name);
     }
 }
+
 
 function removeDuplicates(sheet_name) {
 
